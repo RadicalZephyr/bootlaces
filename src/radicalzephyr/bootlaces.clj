@@ -9,7 +9,10 @@
    [radicalzephyr.bootlaces.template :as t]))
 
 (def ^:private +gpg-config+
-  (let [gpg-files (filter #(.exists %) [(io/file "gpg.edn") (io/file (System/getProperty "user.home") "gpg.edn")])]
+  (let [gpg-files (filter #(.exists %)
+                          [(io/file "gpg.edn")
+                           (io/file (System/getProperty "user.home")
+                                    "gpg.edn")])]
     (when-not (empty? gpg-files) (read-string (slurp (first gpg-files))))))
 
 (def ^:private +last-commit+
@@ -31,10 +34,11 @@
          (map #(into % [:scope "test"]))
          (merge-env! :dependencies)))
   (task-options!
-    push #(into % (merge {:repo "deploy-clojars" :ensure-version version}
-                         (when +last-commit+ {:ensure-clean  true
-                                              :ensure-branch "master"
-                                              :ensure-tag    (last-commit)})))))
+    push #(into %
+                (merge {:repo "deploy-clojars" :ensure-version version}
+                       (when +last-commit+ {:ensure-clean  true
+                                            :ensure-branch "master"
+                                            :ensure-tag    (last-commit)})))))
 
 (defn- get-creds []
   (mapv #(System/getenv %) ["CLOJARS_USER" "CLOJARS_PASS"]))
@@ -47,13 +51,16 @@
       (let [[user pass] (get-creds), clojars-creds (atom {})]
         (if (and user pass)
           (swap! clojars-creds assoc :username user :password pass)
-          (do (println "CLOJARS_USER and CLOJARS_PASS were not set; please enter your Clojars credentials.")
+          (do (println (str "CLOJARS_USER and CLOJARS_PASS were not set;"
+                            " please enter your Clojars credentials."))
               (print "Username: ")
               (#(swap! clojars-creds assoc :username %) (read-line))
               (print "Password: ")
               (#(swap! clojars-creds assoc :password %)
                (apply str (.readPassword (System/console))))))
-        (merge-env! :repositories [["deploy-clojars" (merge @clojars-creds {:url "https://clojars.org/repo"})]])
+        (merge-env! :repositories
+                    [["deploy-clojars" (merge @clojars-creds
+                                              {:url "https://clojars.org/repo"})]])
         (next-handler fileset)))))
 
 (deftask ^:private update-readme-dependency
