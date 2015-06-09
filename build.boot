@@ -4,7 +4,7 @@
                  [boot/core           "2.1.2" :scope "provided"]])
 
 (require '[boot.git :refer [last-commit]]
-         '[adzerk.bootlaces :refer :all])
+         '[radicalzephyr.bootlaces :refer :all])
 
 (def +version+ "0.1.11")
 
@@ -16,9 +16,9 @@
        :ensure-clean   true
        :ensure-tag     (last-commit)
        :ensure-version +version+}
- pom  {:project        'adzerk/bootlaces
+ pom  {:project        'radicalzephyr/bootlaces
        :version        +version+
-       :description    "Adzerk's boot configurations for Clojure libraries "
-       :url            "https://github.com/adzerk/bootlaces"
-       :scm            {:url "https://github.com/adzerk/bootlaces"}
+       :description    "RadicalZephyr's boot configurations for Clojure libraries "
+       :url            "https://github.com/radicalzephyr/bootlaces"
+       :scm            {:url "https://github.com/radicalzephyr/bootlaces"}
        :license        {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}})

@@ -1,4 +1,4 @@
-(ns adzerk.bootlaces
+(ns radicalzephyr.bootlaces
   {:boot/export-tasks true}
   (:require
    [clojure.java.io    :as io]
@@ -6,7 +6,7 @@
    [boot.core          :refer :all]
    [boot.task.built-in :refer :all]
    [boot.git           :refer [last-commit]]
-   [adzerk.bootlaces.template :as t]))
+   [radicalzephyr.bootlaces.template :as t]))
 
 (def ^:private +gpg-config+
   (let [gpg-files (filter #(.exists %) [(io/file "gpg.edn") (io/file (System/getProperty "user.home") "gpg.edn")])]
