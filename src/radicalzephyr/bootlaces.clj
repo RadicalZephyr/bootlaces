@@ -12,6 +12,7 @@
   (let [gpg-files (filter #(.exists %)
                           [(io/file "gpg.edn")
                            (io/file (System/getProperty "user.home")
+                                    ".boot"
                                     "gpg.edn")])]
     (when-not (empty? gpg-files) (read-string (slurp (first gpg-files))))))
 
