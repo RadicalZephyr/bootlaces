@@ -226,7 +226,7 @@
       identity
       (with-pre-wrap fileset
         (let [old-boot-build (slurp boot-build)
-              new-boot-build old-boot-build]
+              new-boot-build (inc-version-in-file old-boot-build level)]
           (when (not= old-boot-build new-boot-build)
             (let [fmt "Incrementing %s version number in build.boot...\n"]
               (util/info fmt (name level)))
