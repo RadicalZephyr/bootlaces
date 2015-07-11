@@ -9,7 +9,7 @@
          '[radicalzephyr.bootlaces :refer :all]
          '[zilti.boot-midje :refer [midje]])
 
-(def +version+ "0.1.13")
+(def +version+ "0.1.14-SNAPSHOT")
 
 (bootlaces! +version+)
 
