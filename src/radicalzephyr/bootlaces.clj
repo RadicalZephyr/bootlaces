@@ -85,14 +85,14 @@
   []
   (comp (pom) (jar) (install) (update-readme-dependency)))
 
-(defn de-snapshot-version
+(defn de-snapshot-version-def
   [s]
   (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)"
                                     s)]
     (.replace s whole (format "(def +version+ \"%s\")" version))
     s))
 
-(deftask de-snapshot-build-file
+(deftask de-snapshot-version
   "Remove SNAPSHOT from the version."
   []
   (let [boot-build (io/file "build.boot")]
@@ -100,7 +100,7 @@
       identity
       (with-pre-wrap fileset
         (let [old-boot-build (slurp boot-build)
-              new-boot-build (de-snapshot-version old-boot-build)]
+              new-boot-build (de-snapshot-version-def old-boot-build)]
           (when (not= old-boot-build new-boot-build)
             (util/info "Removing SNAPSHOT from version in build.boot...\n")
             (spit boot-build new-boot-build)))
@@ -131,7 +131,7 @@
   [v version str "The current project version number."]
   (if-not (git/clean?)
       identity
-      (comp (de-snapshot-build-file)
+      (comp (de-snapshot-version)
             (build-jar)
             (commit-files :files ["build.boot" "README.md"]
                           :message (str "Release " version)))))
