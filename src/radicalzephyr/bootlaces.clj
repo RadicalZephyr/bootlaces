@@ -2,6 +2,7 @@
   {:boot/export-tasks true}
   (:require
    [clojure.java.io    :as io]
+   [boot.pod           :as pod]
    [boot.util          :as util]
    [boot.core          :refer :all]
    [boot.task.built-in :refer :all]
@@ -104,6 +105,24 @@
             (util/info "Removing SNAPSHOT from version in build.boot...\n")
             (spit boot-build new-boot-build)))
         fileset))))
+
+(deftask commit-files
+  [f files   [str] "The files to commit."
+   m message  str  "The commit message."]
+  (let [worker-pods (pod/pod-pool
+                     (update-in (get-env)
+                                [:dependencies]
+                                into '[clj-jgit "0.8.8"])
+                     :init #(require '[clj-git.porcelain :as jgit]))]
+    (cleanup (worker-pods :shutdown))
+    (with-pre-wrap fileset
+      (let [worker-pod (worker-pods :refresh)]
+        (pod/with-eval-in worker-pod
+          (jgit/with-repo "."
+            (doseq [file ~files]
+              (jgit/git-add repo file))
+            (jgit/git-commit repo ~message))))
+      fileset)))
 
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
