@@ -112,8 +112,9 @@
   (let [worker-pods (pod/pod-pool
                      (update-in (get-env)
                                 [:dependencies]
-                                into '[clj-jgit "0.8.8"])
-                     :init #(require '[clj-git.porcelain :as jgit]))]
+                                into '[[clj-jgit "0.8.8"]])
+                     :init #(pod/with-eval-in %
+                              (require '[clj-jgit.porcelain :as jgit])))]
     (cleanup (worker-pods :shutdown))
     (with-pre-wrap fileset
       (let [worker-pod (worker-pods :refresh)]
