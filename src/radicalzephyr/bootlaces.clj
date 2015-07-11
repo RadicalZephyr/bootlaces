@@ -153,6 +153,7 @@
       (comp (update-readme-dependency :version version)
             (commit-files :files ["build.boot" "README.md"]
                           :message (str "Create " version))
+            (sift)
             (build-jar :version version)))))
 
 (deftask build-release
@@ -166,6 +167,7 @@
             (update-readme-dependency :version version)
             (commit-files :files ["build.boot" "README.md"]
                           :message (str "Release " version))
+            (sift)
             (build-jar :version version)))))
 
 (deftask push-snapshot
