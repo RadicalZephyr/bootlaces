@@ -1,5 +1,5 @@
 (set-env!
- :resource-paths #{"src"}
+ :resource-paths #{"src" "test"}
  :dependencies '[[org.clojure/clojure "1.6.0" :scope "provided"]
                  [boot/core           "2.1.2" :scope "provided"]
                  [midje               "1.7.0"          :scope "test"]

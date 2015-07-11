@@ -84,6 +84,13 @@
   []
   (comp (pom) (jar) (install) (update-readme-dependency)))
 
+(defn de-snapshot-version
+  [s]
+  (if-let [[whole version]
+        (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)" s)]
+    (.replace s whole (format "(def +version+ \"%s\")" version))
+    s))
+
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
