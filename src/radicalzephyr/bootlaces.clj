@@ -2,11 +2,11 @@
   {:boot/export-tasks true}
   (:require
    [clojure.java.io    :as io]
+   [boot.git           :as git]
    [boot.pod           :as pod]
    [boot.util          :as util]
    [boot.core          :refer :all]
    [boot.task.built-in :refer :all]
-   [boot.git           :refer [last-commit]]
    [radicalzephyr.bootlaces.template :as t]))
 
 (def ^:private +gpg-config+
@@ -18,7 +18,7 @@
     (when-not (empty? gpg-files) (read-string (slurp (first gpg-files))))))
 
 (def ^:private +last-commit+
-  (try (last-commit) (catch Throwable _)))
+  (try (git/last-commit) (catch Throwable _)))
 
 (defn- assert-edn-resource [x]
   (-> x
@@ -40,7 +40,7 @@
                 (merge {:repo "deploy-clojars" :ensure-version version}
                        (when +last-commit+ {:ensure-clean  true
                                             :ensure-branch "master"
-                                            :ensure-tag    (last-commit)})))))
+                                            :ensure-tag    (git/last-commit)})))))
 
 (defn- get-creds []
   (mapv #(System/getenv %) ["CLOJARS_USER" "CLOJARS_PASS"]))
