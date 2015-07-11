@@ -1,10 +1,13 @@
 (set-env!
  :resource-paths #{"src"}
  :dependencies '[[org.clojure/clojure "1.6.0" :scope "provided"]
-                 [boot/core           "2.1.2" :scope "provided"]])
+                 [boot/core           "2.1.2" :scope "provided"]
+                 [midje               "1.7.0"          :scope "test"]
+                 [zilti/boot-midje    "0.2.1-SNAPSHOT" :scope "test"]])
 
 (require '[boot.git :refer [last-commit]]
-         '[radicalzephyr.bootlaces :refer :all])
+         '[radicalzephyr.bootlaces :refer :all]
+         '[zilti.boot-midje :refer [midje]])
 
 (def +version+ "0.1.13-SNAPSHOT")
 
