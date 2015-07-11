@@ -1,5 +1,4 @@
-(ns radicalzephyr.bootlaces.template
-  (:require [clojure.string :as string]))
+(ns radicalzephyr.bootlaces.template)
 
 (defn pattern-for
   [tag]
