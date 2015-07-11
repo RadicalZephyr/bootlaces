@@ -48,4 +48,9 @@
 
   (fact "a version string can be incremented"
     (inc-version-in-string "0.1.0" :minor) => "0.2.0"
-    (inc-version-in-string "2.1.0" :minor) => "2.2.0"))
+    (inc-version-in-string "2.1.0" :minor) => "2.2.0")
+
+  (fact "a string file contents containing a version def can be updated"
+    (inc-version-in-file "nothing" nil) => "nothing"
+    (inc-version-in-file "(def +version+ \"0.1.0-SNAPSHOT\")" :patch)
+    => "(def +version+ \"0.1.1-SNAPSHOT\")"))

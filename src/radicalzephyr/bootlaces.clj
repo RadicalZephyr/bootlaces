@@ -210,6 +210,9 @@
       (inc-version-level level)
       version-as-vstring))
 
+(defn inc-version-in-file [s level]
+  (update-version s #(inc-version-in-string % level)))
+
 (deftask inc-version
   "Increment project version number."
   [p patch bool "Bump patch version number."
