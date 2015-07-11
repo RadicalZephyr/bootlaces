@@ -91,6 +91,20 @@
     (.replace s whole (format "(def +version+ \"%s\")" version))
     s))
 
+(deftask de-snapshot-build-file
+  "Remove SNAPSHOT from the version."
+  []
+  (let [boot-build (io/file "build.boot")]
+    (if-not (.exists boot-build)
+      identity
+      (with-pre-wrap fileset
+        (let [old-boot-build (slurp boot-build)
+              new-boot-build (de-snapshot-version old-boot-build)]
+          (when (not= old-boot-build new-boot-build)
+            (util/info "Removing SNAPSHOT from version in build.boot...\n")
+            (spit boot-build new-boot-build)))
+        fileset))))
+
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
