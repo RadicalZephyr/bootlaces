@@ -143,7 +143,8 @@
         (comp (de-snapshot-version)
               (update-readme-dependency :version version)
               (commit-files :files ["build.boot" "README.md"]
-                            :message (str "Release " version))))))
+                            :message (str "Release " version))
+              (build-jar :version version)))))
 
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
