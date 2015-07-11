@@ -194,6 +194,13 @@
     {:major major :minor minor :patch patch
      :suffix suffix}))
 
+(defn inc-version-level [version level]
+  (let [version (update-in version [level] inc)]
+    (case level
+      :major (assoc version :minor 0 :patch 0)
+      :minor (assoc version :patch 0)
+      version)))
+
 (deftask inc-version
   "Increment project version number."
   [p patch bool "Bump patch version number."

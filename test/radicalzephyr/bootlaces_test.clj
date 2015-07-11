@@ -30,4 +30,12 @@
     (vstring-as-numbers "0.1.0-SNAPSHOT-arbitrary")
       => {:major 0 :minor 1 :patch 0 :suffix "-SNAPSHOT-arbitrary"}
     (vstring-as-numbers "0.41.0-SNAPSHOT-arbitrary")
-      => {:major 0 :minor 41 :patch 0 :suffix "-SNAPSHOT-arbitrary"}))
+      => {:major 0 :minor 41 :patch 0 :suffix "-SNAPSHOT-arbitrary"})
+
+  (fact "incrementing a level resets all lower levels"
+    (inc-version-level {:major 0 :minor 41 :patch 1 :suffix "-SNAPSHOT-arbitrary"} :major)
+      => {:major 1 :minor 0 :patch 0 :suffix "-SNAPSHOT-arbitrary"}
+    (inc-version-level {:major 0 :minor 41 :patch 1 :suffix "-SNAPSHOT-arbitrary"} :minor)
+      => {:major 0 :minor 42 :patch 0 :suffix "-SNAPSHOT-arbitrary"}
+    (inc-version-level {:major 0 :minor 41 :patch 1 :suffix "-SNAPSHOT-arbitrary"} :patch)
+      => {:major 0 :minor 41 :patch 2 :suffix "-SNAPSHOT-arbitrary"}))
