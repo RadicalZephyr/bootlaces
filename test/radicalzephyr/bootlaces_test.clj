@@ -14,3 +14,9 @@
   (update-version "anything" first) => "anything"
   (update-version "(def +version+ \"0.1.0\")" first)
     => "(def +version+ \"0\")")
+
+(facts "about incrementing version numbers"
+  (fact "a version string is three numbers separated by dots"
+    (vstring-as-numbers "0.1.0") => {:major 0 :minor 1 :patch 0}
+    (vstring-as-numbers "1.1.0") => {:major 1 :minor 1 :patch 0}
+    (vstring-as-numbers "3.4.8") => {:major 3 :minor 4 :patch 8}))

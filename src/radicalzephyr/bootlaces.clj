@@ -1,7 +1,9 @@
 (ns radicalzephyr.bootlaces
   {:boot/export-tasks true}
   (:require
+   [clojure.edn        :as edn]
    [clojure.java.io    :as io]
+   [clojure.string     :as str]
    [boot.git           :as git]
    [boot.pod           :as pod]
    [boot.util          :as util]
@@ -181,6 +183,11 @@
     :gpg-user-id    (:user-id +gpg-config+)
     :ensure-release true
     :repo           "deploy-clojars")))
+
+(defn vstring-as-numbers [vstr]
+  (let [[major minor patch] (->> (clojure.string/split vstr #"\.")
+                                 (map edn/read-string))]
+    {:major major :minor minor :patch patch}))
 
 (deftask inc-version
   "Increment project version number."
