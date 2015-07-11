@@ -221,7 +221,7 @@
   (let [boot-build (io/file "build.boot")
         level (cond major :major
                     minor :minor
-                    patch :patch)]
+                    :else :patch)]
     (if-not (and level (.exists boot-build))
       identity
       (with-pre-wrap fileset
