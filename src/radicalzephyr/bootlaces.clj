@@ -204,6 +204,12 @@
       :minor (assoc version :patch 0)
       version)))
 
+(defn inc-version-in-string [s level]
+  (-> s
+      vstring-as-version
+      (inc-version-level level)
+      version-as-vstring))
+
 (deftask inc-version
   "Increment project version number."
   [p patch bool "Bump patch version number."

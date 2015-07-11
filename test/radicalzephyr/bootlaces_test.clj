@@ -44,4 +44,8 @@
     (version-as-vstring {:major 0 :minor 41 :patch 2 :suffix "-SNAP"})
       => "0.41.2-SNAP"
     (version-as-vstring {:major 1 :minor 0 :patch 2 :suffix ""})
-      => "1.0.2"))
+      => "1.0.2")
+
+  (fact "a version string can be incremented"
+    (inc-version-in-string "0.1.0" :minor) => "0.2.0"
+    (inc-version-in-string "2.1.0" :minor) => "2.2.0"))
