@@ -87,8 +87,8 @@
 
 (defn de-snapshot-version
   [s]
-  (if-let [[whole version]
-        (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)" s)]
+  (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)"
+                                    s)]
     (.replace s whole (format "(def +version+ \"%s\")" version))
     s))
 
