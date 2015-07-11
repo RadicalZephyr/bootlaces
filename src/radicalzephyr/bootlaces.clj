@@ -215,15 +215,12 @@
 
 (deftask inc-version
   "Increment project version number."
-  [p patch bool "Bump patch version number."
-   i minor bool "Bump minor version number."
-   m major bool "Bump major version number."]
-  (let [boot-build (io/file "build.boot")
-        level (cond major :major
-                    minor :minor
-                    :else :patch)]
+  [l level LEVEL kw "Version level to increment."]
+  (let [boot-build (io/file "build.boot")]
     (if-not (and level (.exists boot-build))
-      identity
+      (do
+        (util/warn "No version level given.\n")
+        identity)
       (with-pre-wrap fileset
         (let [old-boot-build (slurp boot-build)
               new-boot-build (inc-version-in-file old-boot-build level)]
@@ -232,3 +229,19 @@
               (util/info fmt (name level)))
             (spit boot-build new-boot-build)))
         fileset))))
+
+(deftask start-next
+  "Start working on next release."
+  [j major bool "Bump major version number."
+   m minor bool "Bump minor version number."
+   p patch bool "Bump patch version number."]
+  (let [level (cond major :major
+                    minor :minor
+                    :else :patch)
+        version (-> (get-current-version)
+                    (inc-version-in-string level))
+        msg (format "Start work on version %s" version)]
+    (comp (inc-version :level level)
+          (update-readme-dependency :version version)
+          (commit-files :files ["build.boot" "README.md"]
+                        :message msg))))
