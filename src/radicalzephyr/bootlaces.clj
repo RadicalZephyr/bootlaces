@@ -67,12 +67,13 @@
 
 (deftask ^:private update-readme-dependency
   "Update latest release version in README.md file."
-  []
+  [v version VERSION str "The version to write"]
   (let [readme (io/file "README.md")]
     (if-not (.exists readme)
       identity
       (with-pre-wrap fileset
-        (let [{:keys [project version]} (-> #'pom meta :task-options)
+        (let [{:keys [project pom-version]} (-> #'pom meta :task-options)
+              version (or version pom-version)
               old-readme (slurp readme)
               new-readme (t/update-dependency old-readme project version)]
           (when (not= old-readme new-readme)
