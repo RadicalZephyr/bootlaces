@@ -107,8 +107,8 @@
         fileset))))
 
 (deftask commit-files
-  [f files   [str] "The files to commit."
-   m message  str  "The commit message."]
+  [f files   FILE    [str] "The files to commit."
+   m message MESSAGE  str  "The commit message."]
   (let [worker-pods (pod/pod-pool
                      (update-in (get-env)
                                 [:dependencies]
