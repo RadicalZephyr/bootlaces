@@ -86,6 +86,9 @@
   []
   (comp (pom) (jar) (install) (update-readme-dependency)))
 
+(defn get-current-version []
+  (-> #'pom meta :task-options :version))
+
 (defn de-snapshot-version-def
   [s]
   (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)"
@@ -129,13 +132,14 @@
       fileset)))
 
 (deftask build-release
-  [v version str "The current project version number."]
+  []
   (if-not (git/clean?)
       identity
-      (comp (de-snapshot-version)
-            (build-jar)
-            (commit-files :files ["build.boot" "README.md"]
-                          :message (str "Release " version)))))
+      (let [version (.replace (get-current-version) "-SNAPSHOT" "")]
+        (comp (de-snapshot-version)
+              (update-readme-dependency :version version)
+              (commit-files :files ["build.boot" "README.md"]
+                            :message (str "Release " version))))))
 
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
