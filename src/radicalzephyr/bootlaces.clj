@@ -185,9 +185,14 @@
     :repo           "deploy-clojars")))
 
 (defn vstring-as-numbers [vstr]
-  (let [[major minor patch] (->> (clojure.string/split vstr #"\.")
+  (let [i (.indexOf vstr "-")
+        dash-index (case i -1 (count vstr) i)
+        suffix (subs vstr dash-index (count vstr))
+        vstr (subs vstr 0 dash-index)
+        [major minor patch] (->> (clojure.string/split vstr #"\.")
                                  (map edn/read-string))]
-    {:major major :minor minor :patch patch}))
+    {:major major :minor minor :patch patch
+     :suffix suffix}))
 
 (deftask inc-version
   "Increment project version number."
