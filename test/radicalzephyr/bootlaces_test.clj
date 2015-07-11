@@ -17,19 +17,19 @@
 
 (facts "about incrementing version numbers"
   (fact "a version string is three numbers separated by dots"
-    (vstring-as-numbers "0.1.0")
+    (vstring-as-version "0.1.0")
       => {:major 0 :minor 1 :patch 0 :suffix ""}
-    (vstring-as-numbers "1.1.0")
+    (vstring-as-version "1.1.0")
       => {:major 1 :minor 1 :patch 0 :suffix ""}
-    (vstring-as-numbers "3.4.8")
+    (vstring-as-version "3.4.8")
       => {:major 3 :minor 4 :patch 8 :suffix ""})
 
   (fact "version's can have optional suffixes after a dash"
-    (vstring-as-numbers "0.1.0-SNAPSHOT")
+    (vstring-as-version "0.1.0-SNAPSHOT")
       => {:major 0 :minor 1 :patch 0 :suffix "-SNAPSHOT"}
-    (vstring-as-numbers "0.1.0-SNAPSHOT-arbitrary")
+    (vstring-as-version "0.1.0-SNAPSHOT-arbitrary")
       => {:major 0 :minor 1 :patch 0 :suffix "-SNAPSHOT-arbitrary"}
-    (vstring-as-numbers "0.41.0-SNAPSHOT-arbitrary")
+    (vstring-as-version "0.41.0-SNAPSHOT-arbitrary")
       => {:major 0 :minor 41 :patch 0 :suffix "-SNAPSHOT-arbitrary"})
 
   (fact "incrementing a level resets all lower levels"

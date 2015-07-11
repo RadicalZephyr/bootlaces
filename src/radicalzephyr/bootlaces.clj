@@ -184,7 +184,7 @@
     :ensure-release true
     :repo           "deploy-clojars")))
 
-(defn vstring-as-numbers [vstr]
+(defn vstring-as-version [vstr]
   (let [i (.indexOf vstr "-")
         dash-index (case i -1 (count vstr) i)
         suffix (subs vstr dash-index (count vstr))
