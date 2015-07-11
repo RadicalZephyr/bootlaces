@@ -125,12 +125,13 @@
                               (require '[clj-jgit.porcelain :as jgit])))]
     (cleanup (worker-pods :shutdown))
     (with-pre-wrap fileset
-      (let [worker-pod (worker-pods :refresh)]
-        (pod/with-eval-in worker-pod
-          (jgit/with-repo "."
-            (doseq [file ~files]
-              (jgit/git-add repo file))
-            (jgit/git-commit repo ~message))))
+      (when-not (git/clean?)
+        (let [worker-pod (worker-pods :refresh)]
+          (pod/with-eval-in worker-pod
+            (jgit/with-repo "."
+              (doseq [file ~files]
+                (jgit/git-add repo file))
+              (jgit/git-commit repo ~message)))))
       fileset)))
 
 (deftask build-snapshot
