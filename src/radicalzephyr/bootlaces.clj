@@ -178,3 +178,23 @@
     :gpg-user-id    (:user-id +gpg-config+)
     :ensure-release true
     :repo           "deploy-clojars")))
+
+(deftask inc-version
+  "Increment project version number."
+  [p patch bool "Bump patch version number."
+   i minor bool "Bump minor version number."
+   m major bool "Bump major version number."]
+  (let [boot-build (io/file "build.boot")
+        level (cond major :major
+                    minor :minor
+                    patch :patch)]
+    (if-not (and level (.exists boot-build))
+      identity
+      (with-pre-wrap fileset
+        (let [old-boot-build (slurp boot-build)
+              new-boot-build old-boot-build]
+          (when (not= old-boot-build new-boot-build)
+            (let [fmt "Incrementing %s version number in build.boot...\n"]
+              (util/info fmt (name level)))
+            (spit boot-build new-boot-build)))
+        fileset))))
