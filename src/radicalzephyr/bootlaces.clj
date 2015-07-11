@@ -112,7 +112,9 @@
   (let [worker-pods (pod/pod-pool
                      (update-in (get-env)
                                 [:dependencies]
-                                into '[[clj-jgit "0.8.8"]])
+                                into '[[clj-jgit "0.8.8"]
+                                       [org.slf4j/slf4j-api "1.7.12"]
+                                       [org.slf4j/slf4j-simple "1.7.12"]])
                      :init #(pod/with-eval-in %
                               (require '[clj-jgit.porcelain :as jgit])))]
     (cleanup (worker-pods :shutdown))
