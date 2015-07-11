@@ -194,6 +194,9 @@
     {:major major :minor minor :patch patch
      :suffix suffix}))
 
+(defn version-as-vstring [{:keys [major minor patch suffix]}]
+  (format "%d.%d.%d%s" major minor patch suffix))
+
 (defn inc-version-level [version level]
   (let [version (update-in version [level] inc)]
     (case level

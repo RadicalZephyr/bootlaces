@@ -38,4 +38,10 @@
     (inc-version-level {:major 0 :minor 41 :patch 1 :suffix "-SNAPSHOT-arbitrary"} :minor)
       => {:major 0 :minor 42 :patch 0 :suffix "-SNAPSHOT-arbitrary"}
     (inc-version-level {:major 0 :minor 41 :patch 1 :suffix "-SNAPSHOT-arbitrary"} :patch)
-      => {:major 0 :minor 41 :patch 2 :suffix "-SNAPSHOT-arbitrary"}))
+      => {:major 0 :minor 41 :patch 2 :suffix "-SNAPSHOT-arbitrary"})
+
+  (fact "a version map can be turned back into a string"
+    (version-as-vstring {:major 0 :minor 41 :patch 2 :suffix "-SNAP"})
+      => "0.41.2-SNAP"
+    (version-as-vstring {:major 1 :minor 0 :patch 2 :suffix ""})
+      => "1.0.2"))
