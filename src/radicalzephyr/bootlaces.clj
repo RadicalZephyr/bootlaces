@@ -124,6 +124,15 @@
             (jgit/git-commit repo ~message))))
       fileset)))
 
+(deftask build-release
+  [v version str "The current project version number."]
+  (if-not (git/clean?)
+      identity
+      (comp (de-snapshot-build-file)
+            (build-jar)
+            (commit-files :files ["build.boot" "README.md"]
+                          :message (str "Release " version)))))
+
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
