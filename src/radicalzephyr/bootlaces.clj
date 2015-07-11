@@ -138,13 +138,15 @@
 (deftask build-release
   []
   (if-not (git/clean?)
-      identity
-      (let [version (.replace (get-current-version) "-SNAPSHOT" "")]
-        (comp (de-snapshot-version)
-              (update-readme-dependency :version version)
-              (commit-files :files ["build.boot" "README.md"]
-                            :message (str "Release " version))
-              (build-jar :version version)))))
+    (do
+      (util/warn "Refusing to continue, git repo is not clean.\n")
+      identity)
+    (let [version (.replace (get-current-version) "-SNAPSHOT" "")]
+      (comp (de-snapshot-version)
+            (update-readme-dependency :version version)
+            (commit-files :files ["build.boot" "README.md"]
+                          :message (str "Release " version))
+            (build-jar :version version)))))
 
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
