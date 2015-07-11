@@ -24,4 +24,6 @@
        :description    "RadicalZephyr's boot configurations for Clojure libraries "
        :url            "https://github.com/radicalzephyr/bootlaces"
        :scm            {:url "https://github.com/radicalzephyr/bootlaces"}
-       :license        {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}})
+       :license        {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}}
+ sift {:invert true
+       :include [#".*_test.clj"]})
