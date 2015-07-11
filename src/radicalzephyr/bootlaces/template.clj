@@ -7,7 +7,7 @@
 
 (defn replace-tag
   [s tag body]
-  (let [matches (re-seq (pattern-for tag) body)]
+  (if-let [matches (re-seq (pattern-for tag) body)]
     (-> (fn [s [elem opentag tagbody closetag]]
           (.replace s elem (str opentag body closetag)))
         (reduce s (re-seq (pattern-for tag) s)))))
