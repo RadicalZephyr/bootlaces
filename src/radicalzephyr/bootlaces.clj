@@ -86,8 +86,7 @@
   [v version VERSION str "The version to write"]
   (comp (pom :version version)
         (jar)
-        (install)
-        (update-readme-dependency :version version)))
+        (install)))
 
 (defn get-current-version []
   (-> #'pom meta :task-options :version))
@@ -133,6 +132,18 @@
               (jgit/git-add repo file))
             (jgit/git-commit repo ~message))))
       fileset)))
+
+(deftask build-snapshot
+  []
+  (if-not (git/clean?)
+    (do
+      (util/warn "Refusing to continue, git repo is not clean.\n")
+      identity)
+    (let [version (get-current-version)]
+      (comp (update-readme-dependency :version version)
+            (commit-files :files ["build.boot" "README.md"]
+                          :message (str "Create " version))
+            (build-jar :version version)))))
 
 (deftask build-release
   []
