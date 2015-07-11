@@ -6,7 +6,7 @@
 (require '[boot.git :refer [last-commit]]
          '[radicalzephyr.bootlaces :refer :all])
 
-(def +version+ "0.1.12")
+(def +version+ "0.1.13-SNAPSHOT")
 
 (bootlaces! +version+)
 
