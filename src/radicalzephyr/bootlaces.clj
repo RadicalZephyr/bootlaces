@@ -91,12 +91,15 @@
 (defn get-current-version []
   (-> #'pom meta :task-options :version))
 
+(defn update-version [s f]
+  (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)\"\)"
+                                    s)]
+    (.replace s whole (format "(def +version+ \"%s\")" (f version)))
+    s))
+
 (defn de-snapshot-version-def
   [s]
-  (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)-SNAPSHOT\"\)"
-                                    s)]
-    (.replace s whole (format "(def +version+ \"%s\")" version))
-    s))
+  (update-version s #(.replace % "-SNAPSHOT" "")))
 
 (deftask de-snapshot-version
   "Remove SNAPSHOT from the version."
