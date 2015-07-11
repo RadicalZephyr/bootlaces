@@ -83,8 +83,12 @@
 
 (deftask build-jar
   "Build jar and install to local repo."
-  []
-  (comp (pom) (jar) (install) (update-readme-dependency)))
+  [v version VERSION str "The version to write"]
+  (comp (if version
+          (pom :version version)
+          (pom))
+        (jar)
+        (install)))
 
 (defn get-current-version []
   (-> #'pom meta :task-options :version))
