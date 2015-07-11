@@ -1,5 +1,5 @@
 (set-env!
- :resource-paths #{"src" "test"}
+ :source-paths #{"src" "test"}
  :dependencies '[[org.clojure/clojure "1.6.0" :scope "provided"]
                  [boot/core           "2.1.2" :scope "provided"]
                  [midje               "1.7.0"          :scope "test"]
@@ -24,6 +24,4 @@
        :description    "RadicalZephyr's boot configurations for Clojure libraries "
        :url            "https://github.com/radicalzephyr/bootlaces"
        :scm            {:url "https://github.com/radicalzephyr/bootlaces"}
-       :license        {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}}
- sift {:invert true
-       :include [#".*_test.clj"]})
+       :license        {"Eclipse Public License" "http://www.eclipse.org/legal/epl-v10.html"}})
