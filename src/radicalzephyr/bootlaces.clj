@@ -234,6 +234,26 @@
             (spit boot-build new-boot-build)))
         fileset))))
 
+(defn add-snapshot [vstr]
+  (if (.contains vstr "-SNAPSHOT")
+    vstr
+    (str vstr "-SNAPSHOT")))
+
+(deftask snapshotify-version
+  "Add -SNAPSHOT to the version."
+  []
+  (let [boot-build (io/file "build.boot")]
+    (if-not (.exists boot-build)
+      identity
+      (with-pre-wrap fileset
+        (let [old-boot-build (slurp boot-build)
+              new-boot-build (update-version old-boot-build
+                                             add-snapshot)]
+          (when (not= old-boot-build new-boot-build)
+            (util/info "Appending SNAPSHOT to version...\n")
+            (spit boot-build new-boot-build)))
+        fileset))))
+
 (deftask start-next
   "Start working on next release."
   [j major bool "Bump major version number."
@@ -244,9 +264,10 @@
                     :else :patch)
         version (-> (get-current-version)
                     (inc-version-in-string level)
-                    (str "-SNAPSHOT"))
+                    add-snapshot)
         msg (format "Start work on version %s" version)]
-    (comp (inc-version :level level)
+    (comp (snapshotify-version)
+          (inc-version :level level)
           (update-readme-dependency :version version)
           (commit-files :files ["build.boot" "README.md"]
                         :message msg))))
