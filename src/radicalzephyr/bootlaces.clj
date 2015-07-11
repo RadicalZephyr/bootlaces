@@ -243,7 +243,8 @@
                     minor :minor
                     :else :patch)
         version (-> (get-current-version)
-                    (inc-version-in-string level))
+                    (inc-version-in-string level)
+                    (str "-SNAPSHOT"))
         msg (format "Start work on version %s" version)]
     (comp (inc-version :level level)
           (update-readme-dependency :version version)
