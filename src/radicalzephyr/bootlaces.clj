@@ -176,7 +176,9 @@
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
   (comp (collect-clojars-credentials)
-        (push :file file :ensure-snapshot true)))
+        (push :file            file
+              :ensure-snapshot true
+              :ensure-branch   "dev")))
 
 (deftask push-release
   "Deploy release version to Clojars."
