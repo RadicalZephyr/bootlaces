@@ -178,7 +178,8 @@
   (comp (collect-clojars-credentials)
         (push :file            file
               :ensure-snapshot true
-              :ensure-branch   "dev")))
+              :ensure-branch   "dev"
+              :repo            "deploy-clojars")))
 
 (deftask push-release
   "Deploy release version to Clojars."
