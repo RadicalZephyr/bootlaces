@@ -30,8 +30,10 @@
       read-string))
 
 (defn bootlaces!
-  [version & {:keys [dev-dependencies]}]
-  (merge-env! :resource-paths #{"src"})
+  [version & {:keys [dev-dependencies
+                     project-type]}]
+  (when (not= project-type :java)
+    (merge-env! :resource-paths #{"src"}))
   (when dev-dependencies
     (->> dev-dependencies
          assert-edn-resource
