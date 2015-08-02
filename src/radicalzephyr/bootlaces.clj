@@ -80,12 +80,11 @@
    u url    URL    str "The url of the repository"]
   (fn [next-handler]
     (fn [fileset]
-      (let [name (or name "deploy-clojars")
-            url  (or url "https://clojars.org/repo")
-            prefix (or prefix "CLOJARS_")
-            creds (collect-credentials prefix url)]
-        (merge-env! :repositories [[name creds]])
-        (next-handler fileset)))))
+      (if (and prefix name url)
+        (let [creds (collect-credentials prefix url)]
+          (merge-env! :repositories [[name creds]])
+          (next-handler fileset))
+        (util/warn "No options specified for merge-credentials.\n")))))
 
 (deftask ^:private update-readme-dependency
   "Update latest release version in README.md file."
@@ -190,10 +189,15 @@
             (sift)
             (build-jar :version version)))))
 
+(def ^:private clojars-opts
+  [:prefix "CLOJARS_"
+   :name   "deploy-clojars"
+   :url    "https://clojars.org/repo"])
+
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
-  (comp (merge-credentials)
+  (comp (apply merge-credentials clojars-opts)
         (push :file            file
               :ensure-snapshot true
               :ensure-branch   "dev"
@@ -203,7 +207,7 @@
   "Deploy release version to Clojars."
   [f file PATH str "The jar file to deploy."]
   (comp
-   (merge-credentials)
+   (apply merge-credentials clojars-opts)
    (push
     :file           file
     :tag            (boolean +last-commit+)
