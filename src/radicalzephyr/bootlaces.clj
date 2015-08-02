@@ -49,8 +49,8 @@
 (defn- get-creds [prefix]
   (mapv #(System/getenv %) [(str prefix "USER") (str prefix "PASS")]))
 
-(deftask collect-credentials
-  "Collect repository credentials from the user if they're not set.
+(deftask merge-credentials
+  "Collect and merge in repository credentials from the user if they're not set.
 
   The username and password are assumed to possibly be in the
   environment variabels `PREFIX'_USER and `PREFIX'_PASS. Defaults to
@@ -186,7 +186,7 @@
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
-  (comp (collect-credentials)
+  (comp (merge-credentials)
         (push :file            file
               :ensure-snapshot true
               :ensure-branch   "dev"
@@ -196,7 +196,7 @@
   "Deploy release version to Clojars."
   [f file PATH str "The jar file to deploy."]
   (comp
-   (collect-credentials)
+   (merge-credentials)
    (push
     :file           file
     :tag            (boolean +last-commit+)
