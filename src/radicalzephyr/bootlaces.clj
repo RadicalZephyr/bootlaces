@@ -49,25 +49,35 @@
 (defn- get-creds [prefix]
   (mapv #(System/getenv %) [(str prefix "USER") (str prefix "PASS")]))
 
-(deftask ^:private collect-clojars-credentials
-  "Collect CLOJARS_USER and CLOJARS_PASS from the user if they're not set."
-  []
+(deftask collect-credentials
+  "Collect repository credentials from the user if they're not set.
+
+  The username and password are assumed to possibly be in the
+  environment variabels `PREFIX'_USER and `PREFIX'_PASS. Defaults to
+  clojars."
+  [p prefix PREFIX str "The environment variable prefix"
+   n name   NAME   str "The name of the repository"
+   u url    URL    str "The url of the repository"]
   (fn [next-handler]
     (fn [fileset]
-      (let [[user pass] (get-creds "CLOJARS_")
-            clojars-creds (atom {})]
+      (let [name (or name "deploy-clojars")
+            url  (or url "https://clojars.org/repo")
+            prefix (or prefix "CLOJARS_")
+            [user pass] (get-creds prefix)
+            repo-creds (atom {})]
         (if (and user pass)
-          (swap! clojars-creds assoc :username user :password pass)
-          (do (println (str "CLOJARS_USER and CLOJARS_PASS were not set;"
-                            " please enter your Clojars credentials."))
+          (swap! repo-creds assoc :username user :password pass)
+          (do (println (format
+                        "%sUSER and %<sPASS were not set; please enter your %s credentials."
+                        prefix name))
               (print "Username: ")
-              (#(swap! clojars-creds assoc :username %) (read-line))
+              (#(swap! repo-creds assoc :username %) (read-line))
               (print "Password: ")
-              (#(swap! clojars-creds assoc :password %)
+              (#(swap! repo-creds assoc :password %)
                (apply str (.readPassword (System/console))))))
         (merge-env! :repositories
-                    [["deploy-clojars" (merge @clojars-creds
-                                              {:url "https://clojars.org/repo"})]])
+                    [[name (merge @repo-creds
+                                  {:url url})]])
         (next-handler fileset)))))
 
 (deftask ^:private update-readme-dependency
@@ -176,7 +186,7 @@
 (deftask push-snapshot
   "Deploy snapshot version to Clojars."
   [f file PATH str "The jar file to deploy."]
-  (comp (collect-clojars-credentials)
+  (comp (collect-credentials)
         (push :file            file
               :ensure-snapshot true
               :ensure-branch   "dev"
@@ -186,7 +196,7 @@
   "Deploy release version to Clojars."
   [f file PATH str "The jar file to deploy."]
   (comp
-   (collect-clojars-credentials)
+   (collect-credentials)
    (push
     :file           file
     :tag            (boolean +last-commit+)
