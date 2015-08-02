@@ -46,8 +46,28 @@
                                             :ensure-branch "master"
                                             :ensure-tag    (git/last-commit)})))))
 
-(defn- get-creds [prefix]
-  (mapv #(System/getenv %) [(str prefix "USER") (str prefix "PASS")]))
+(defn- get-cleartext [prompt]
+  (print prompt)
+  (read-line))
+
+(defn- get-password [prompt]
+  (print prompt)
+  (apply str (.readPassword (System/console))))
+
+(defn- get-env-or-prompt [prefix prompt-fmt word get-fn]
+  (let [env-name (str prefix word)]
+    (or (System/getenv env-name)
+        (get-fn (format prompt-fmt env-name (str/capitalize word))))))
+
+(defn collect-credentials [prefix url]
+  (let [[user pass] (mapv #(get-env-or-prompt prefix
+                                              "%s was not defined.\n%s: "
+                                              %1 %2)
+                          ["USERNAME"    "PASSWORD"]
+                          [get-cleartext get-password])]
+    {:url url
+     :username user
+     :password pass}))
 
 (deftask merge-credentials
   "Collect and merge in repository credentials from the user if they're not set.
@@ -63,21 +83,8 @@
       (let [name (or name "deploy-clojars")
             url  (or url "https://clojars.org/repo")
             prefix (or prefix "CLOJARS_")
-            [user pass] (get-creds prefix)
-            repo-creds (atom {})]
-        (if (and user pass)
-          (swap! repo-creds assoc :username user :password pass)
-          (do (println (format
-                        "%sUSER and %<sPASS were not set; please enter your %s credentials."
-                        prefix name))
-              (print "Username: ")
-              (#(swap! repo-creds assoc :username %) (read-line))
-              (print "Password: ")
-              (#(swap! repo-creds assoc :password %)
-               (apply str (.readPassword (System/console))))))
-        (merge-env! :repositories
-                    [[name (merge @repo-creds
-                                  {:url url})]])
+            creds (collect-credentials prefix url)]
+        (merge-env! :repositories [[name creds]])
         (next-handler fileset)))))
 
 (deftask ^:private update-readme-dependency
