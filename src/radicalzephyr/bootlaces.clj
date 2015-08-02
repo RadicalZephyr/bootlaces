@@ -46,15 +46,16 @@
                                             :ensure-branch "master"
                                             :ensure-tag    (git/last-commit)})))))
 
-(defn- get-creds []
-  (mapv #(System/getenv %) ["CLOJARS_USER" "CLOJARS_PASS"]))
+(defn- get-creds [prefix]
+  (mapv #(System/getenv %) [(str prefix "USER") (str prefix "PASS")]))
 
 (deftask ^:private collect-clojars-credentials
   "Collect CLOJARS_USER and CLOJARS_PASS from the user if they're not set."
   []
   (fn [next-handler]
     (fn [fileset]
-      (let [[user pass] (get-creds), clojars-creds (atom {})]
+      (let [[user pass] (get-creds "CLOJARS_")
+            clojars-creds (atom {})]
         (if (and user pass)
           (swap! clojars-creds assoc :username user :password pass)
           (do (println (str "CLOJARS_USER and CLOJARS_PASS were not set;"
