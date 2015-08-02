@@ -105,9 +105,7 @@
 (deftask build-jar
   "Build jar and install to local repo."
   [v version VERSION str "The version to write"]
-  (comp (if version
-          (pom :version version)
-          (pom))
+  (comp (apply pom (when version [:version version]))
         (jar)
         (install)))
 
