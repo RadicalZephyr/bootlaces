@@ -111,20 +111,20 @@
         (jar)
         (install)))
 
-(defn get-current-version []
+(defn- get-current-version []
   (-> #'pom meta :task-options :version))
 
-(defn update-version [s f]
+(defn- update-version [s f]
   (if-let [[whole version] (re-find #"\(def \+version\+ \"(.*)\"\)"
                                     s)]
     (.replace s whole (format "(def +version+ \"%s\")" (f version)))
     s))
 
-(defn de-snapshot-version-def
+(defn- de-snapshot-version-def
   [s]
   (update-version s #(.replace % "-SNAPSHOT" "")))
 
-(deftask de-snapshot-version
+(deftask ^:private de-snapshot-version
   "Remove SNAPSHOT from the version."
   []
   (let [boot-build (io/file "build.boot")]
@@ -138,7 +138,7 @@
             (spit boot-build new-boot-build)))
         fileset))))
 
-(deftask commit-files
+(deftask ^:private commit-files
   [f files   FILE    [str] "The files to commit."
    m message MESSAGE  str  "The commit message."]
   (let [worker-pods (pod/pod-pool
@@ -217,7 +217,7 @@
     :ensure-release true
     :repo           "deploy-clojars")))
 
-(defn vstring-as-version [vstr]
+(defn- vstring-as-version [vstr]
   (let [i (.indexOf vstr "-")
         dash-index (case i -1 (count vstr) i)
         suffix (subs vstr dash-index (count vstr))
@@ -227,26 +227,26 @@
     {:major major :minor minor :patch patch
      :suffix suffix}))
 
-(defn version-as-vstring [{:keys [major minor patch suffix]}]
+(defn- version-as-vstring [{:keys [major minor patch suffix]}]
   (format "%d.%d.%d%s" major minor patch suffix))
 
-(defn inc-version-level [version level]
+(defn- inc-version-level [version level]
   (let [version (update-in version [level] inc)]
     (case level
       :major (assoc version :minor 0 :patch 0)
       :minor (assoc version :patch 0)
       version)))
 
-(defn inc-version-in-string [s level]
+(defn- inc-version-in-string [s level]
   (-> s
       vstring-as-version
       (inc-version-level level)
       version-as-vstring))
 
-(defn inc-version-in-file [s level]
+(defn- inc-version-in-file [s level]
   (update-version s #(inc-version-in-string % level)))
 
-(deftask inc-version
+(deftask ^:private inc-version
   "Increment project version number."
   [l level LEVEL kw "Version level to increment."]
   (let [boot-build (io/file "build.boot")]
@@ -263,12 +263,12 @@
             (spit boot-build new-boot-build)))
         fileset))))
 
-(defn add-snapshot [vstr]
+(defn- add-snapshot [vstr]
   (if (.contains vstr "-SNAPSHOT")
     vstr
     (str vstr "-SNAPSHOT")))
 
-(deftask snapshotify-version
+(deftask ^:private snapshotify-version
   "Add -SNAPSHOT to the version."
   []
   (let [boot-build (io/file "build.boot")]
