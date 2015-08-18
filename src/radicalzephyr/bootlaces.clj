@@ -11,14 +11,6 @@
    [boot.task.built-in :refer :all]
    [radicalzephyr.bootlaces.template :as t]))
 
-(def ^:private +gpg-config+
-  (let [gpg-files (filter #(.exists %)
-                          [(io/file "gpg.edn")
-                           (io/file (System/getProperty "user.home")
-                                    ".boot"
-                                    "gpg.edn")])]
-    (when-not (empty? gpg-files) (read-string (slurp (first gpg-files))))))
-
 (def ^:private +last-commit+
   (try (git/last-commit) (catch Throwable _)))
 
@@ -210,8 +202,6 @@
     :file           file
     :tag            (boolean +last-commit+)
     :gpg-sign       true
-    :gpg-keyring    (:keyring +gpg-config+)
-    :gpg-user-id    (:user-id +gpg-config+)
     :ensure-release true
     :repo           "deploy-clojars")))
 
