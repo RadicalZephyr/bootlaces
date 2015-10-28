@@ -31,8 +31,8 @@
 
 (defn bootlaces!
   [version & {:keys [dev-dependencies
-                     project-type]}]
-  (when (not= project-type :java)
+                     dont-modify-paths?]}]
+  (when-not dont-modify-paths?
     (merge-env! :resource-paths (get-env :source-paths)))
   (when dev-dependencies
     (->> dev-dependencies
