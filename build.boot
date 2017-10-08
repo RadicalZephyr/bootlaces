@@ -1,8 +1,9 @@
 (set-env!
  :resource-paths #{"src" "test"}
- :dependencies '[[org.clojure/clojure "1.6.0" :scope "provided"]
+ :dependencies '[[org.clojure/clojure "1.8.0" :scope "provided"]
                  [boot/core           "2.1.2" :scope "provided"]
-                 [midje               "1.7.0"          :scope "test"]
+                 [midje               "1.7.0"          :scope "test"
+                  :exclusions [[org.clojure/tools.namespace]]]
                  [zilti/boot-midje    "0.2.1-SNAPSHOT" :scope "test"]])
 
 (require '[boot.git :refer [last-commit]]
