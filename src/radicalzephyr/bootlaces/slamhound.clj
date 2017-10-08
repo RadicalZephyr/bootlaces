@@ -38,14 +38,17 @@
 
 (core/deftask slamhound
   "Run the slamhound namespace re-writer on a set of namespaces."
-  [n namespaces NSES #{sym} "The set of namespaces to feed through the slamhound."]
+  [n namespaces NSES #{sym} "The set of namespaces to feed through the slamhound"
+   p paths PATHS #{str} "The set of paths (files or directories) to feed through the slamhound"]
   (let [worker-pod (pod/make-pod (update-in (core/get-env) [:dependencies] into pod-deps))]
     (init worker-pod)
     (core/cleanup (pod/destroy-pod worker-pod))
     (core/with-pre-wrap [fs]
       (let [clojure-files (->> (core/input-files fs)
-                               (core/by-ext #{".clj"})
-                               (by-ns namespaces))]
+                               (core/by-ext #{".clj"}))
+            ns-files (by-ns namespaces clojure-files)
+            path-files (core/by-path paths clojure-files)]
         (pod/with-eval-in worker-pod
-          (apply slam.hound/-main ~(mapv (comp str core/tmp-file) clojure-files)))
+          (apply slam.hound/-main ~(mapv (comp str core/tmp-file) (concat ns-files
+                                                                          path-files))))
         fs))))
