@@ -2,7 +2,8 @@
  :source-paths #{"src" "test"}
  :dependencies '[[org.clojure/clojure "1.8.0" :scope "provided"]
                  [boot/core           "2.7.1" :scope "provided"]
-                 [midje               "1.8.3"          :scope "test"]
+                 [midje               "1.8.3"          :scope "test"
+                  :exclusions [org.clojure/tools.namespace]]
                  [zilti/boot-midje    "0.2.2-SNAPSHOT" :scope "test"]])
 
 (require '[boot.git :refer [last-commit]]
