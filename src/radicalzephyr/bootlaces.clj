@@ -14,30 +14,6 @@
 (def ^:private +last-commit+
   (try (git/last-commit) (catch Throwable _)))
 
-(defn- assert-edn-resource [x]
-  (-> x
-      io/resource
-      (doto (assert (format "resource not found on class path (%s)" x)))
-      slurp
-      read-string))
-
-(defn bootlaces!
-  [version & {:keys [dev-dependencies
-                     dont-modify-paths?]}]
-  (when-not dont-modify-paths?
-    (merge-env! :resource-paths (get-env :source-paths)))
-  (when dev-dependencies
-    (->> dev-dependencies
-         assert-edn-resource
-         (map #(into % [:scope "test"]))
-         (merge-env! :dependencies)))
-  (task-options!
-    push #(into %
-                (merge {:repo "deploy-clojars" :ensure-version version}
-                       (when +last-commit+ {:ensure-clean  true
-                                            :ensure-branch "master"
-                                            :ensure-tag    (git/last-commit)})))))
-
 (defn- get-cleartext [prompt]
   (print prompt)
   (read-line))
