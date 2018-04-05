@@ -46,9 +46,17 @@
     (core/with-pre-wrap [fs]
       (let [clojure-files (->> (core/input-files fs)
                                (core/by-ext #{".clj"}))
-            ns-files (by-ns namespaces clojure-files)
-            path-files (core/by-path paths clojure-files)]
+            ns-files (if (seq namespaces)
+                       (by-ns namespaces clojure-files)
+                       [])
+            path-files (if (seq paths)
+                         (core/by-path paths clojure-files)
+                         [])
+            ns-and-path-files (-> ns-files
+                                  (concat path-files)
+                                  seq)
+            slamhound-files (or ns-and-path-files
+                                clojure-files)]
         (pod/with-eval-in worker-pod
-          (apply slam.hound/-main ~(mapv (comp str core/tmp-file) (concat ns-files
-                                                                          path-files))))
+          (slam.hound/-main ~@(mapv (comp str core/tmp-file) slamhound-files)))
         fs))))
